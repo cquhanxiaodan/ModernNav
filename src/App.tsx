@@ -211,7 +211,7 @@ const App: React.FC = () => {
                           size={scaledIconSize}
                           style={{ width: `${scaledIconSize}px`, height: `${scaledIconSize}px` }}
                           faviconApi={faviconApi}
-                          sourceUrl={link.url}
+                          sourceUrl={link.icon ? undefined : link.url}
                         />
                       </div>
                       <span

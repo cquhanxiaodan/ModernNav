@@ -33,7 +33,7 @@ export const SmartIcon: React.FC<SmartIconProps> = ({
     if (icon && (icon.startsWith("http") || icon.startsWith("data:"))) {
       if (icon.startsWith("data:")) return [icon];
 
-      if (isFaviconApiUrl(icon) && sourceUrl) {
+      if (isFaviconApiUrl(icon) && sourceUrl && faviconApi) {
         return getFallbackFaviconUrls(sourceUrl, faviconApi);
       }
 
