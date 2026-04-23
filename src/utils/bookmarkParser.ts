@@ -28,26 +28,16 @@ function parseDl(dl: Element): BookmarkNode[] {
     const el = children[i];
     if (el.tagName !== "DT") continue;
 
-    const h3 = el.querySelector("H3");
-    const a = el.querySelector("A");
+    const h3 = el.querySelector(":scope > H3");
+    const a = el.querySelector(":scope > A");
+    const childDl = el.querySelector(":scope > DL");
 
     if (h3) {
       const folder: BookmarkNode = {
         type: "folder",
         title: h3.textContent?.trim() || "Unnamed Folder",
-        children: [],
+        children: childDl ? parseDl(childDl) : [],
       };
-
-      for (let j = i + 1; j < children.length; j++) {
-        if (children[j].tagName === "DL") {
-          folder.children = parseDl(children[j]);
-          break;
-        }
-        if (children[j].tagName === "DT") {
-          break;
-        }
-      }
-
       nodes.push(folder);
     } else if (a) {
       const href = a.getAttribute("href");
@@ -103,12 +93,12 @@ function convertNodeToCategory(node: BookmarkNode): Category | null {
 }
 
 function convertFolderToSubCategory(node: BookmarkNode): SubCategory | null {
-  const items: LinkItem[] = [];
+  const directLinks: LinkItem[] = [];
   const childSubs: SubCategory[] = [];
 
   for (const child of node.children || []) {
     if (child.type === "link") {
-      items.push({
+      directLinks.push({
         id: generateId(),
         title: child.title,
         url: child.url!,
@@ -121,14 +111,22 @@ function convertFolderToSubCategory(node: BookmarkNode): SubCategory | null {
     }
   }
 
-  if (items.length === 0 && childSubs.length === 0) return null;
+  if (directLinks.length === 0 && childSubs.length === 0) return null;
+
+  if (childSubs.length === 0) {
+    return {
+      id: generateId(),
+      title: node.title,
+      items: directLinks,
+    };
+  }
 
   const subCategories: SubCategory[] = [];
-  if (items.length > 0) {
+  if (directLinks.length > 0) {
     subCategories.push({
       id: generateId(),
       title: "Default",
-      items,
+      items: directLinks,
     });
   }
   subCategories.push(...childSubs);
@@ -136,11 +134,10 @@ function convertFolderToSubCategory(node: BookmarkNode): SubCategory | null {
   return {
     id: generateId(),
     title: node.title,
-    items: subCategories.length === 1 && subCategories[0].title === "Default"
-      ? subCategories[0].items
-      : items.length > 0
-        ? items
-        : [],
+    items: directLinks.length > 0
+      ? directLinks
+      : childSubs[0]?.items || [],
+    subCategories,
   };
 }
 
