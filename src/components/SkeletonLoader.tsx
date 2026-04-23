@@ -23,14 +23,18 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
   return (
     <div className="w-full space-y-8 animate-pulse">
       {/* Search Bar Skeleton */}
-      <div className="w-full max-w-[400px] mx-auto h-12 rounded-2xl bg-white/5 border border-white/10 mb-14" />
+      <div
+        className={`w-full max-w-[400px] mx-auto h-12 rounded-2xl mb-14 ${
+          isDark ? "bg-slate-800/40 border border-slate-700/50" : "bg-slate-100 border border-slate-200/60"
+        }`}
+      />
 
       {/* Grid Skeleton */}
       <div className="mx-auto w-full" style={{ maxWidth: `${maxContainerWidth}px` }}>
         <div className="flex items-center gap-4 mb-6">
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-white/10"></div>
-          <div className="w-24 h-3 bg-white/10 rounded-full" />
-          <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-white/10"></div>
+          <div className={`h-[1px] flex-1 ${isDark ? "bg-slate-700" : "bg-slate-200"}`}></div>
+          <div className={`w-24 h-3 rounded-full ${isDark ? "bg-slate-700" : "bg-slate-200"}`} />
+          <div className={`h-[1px] flex-1 ${isDark ? "bg-slate-700" : "bg-slate-200"}`}></div>
         </div>
 
         <div
@@ -49,8 +53,16 @@ export const SkeletonLoader: React.FC<SkeletonLoaderProps> = ({
               className="flex flex-col items-center justify-center p-2"
               style={{ height: `${cardHeight}px` }}
             >
-              <div className="w-6 h-6 rounded-md bg-white/10 mb-2" />
-              <div className="w-12 h-2 bg-white/10 rounded-full" />
+              <div
+                className={`w-6 h-6 rounded-md mb-2 ${
+                  isDark ? "bg-slate-700" : "bg-slate-200"
+                }`}
+              />
+              <div
+                className={`w-12 h-2 rounded-full ${
+                  isDark ? "bg-slate-700" : "bg-slate-200"
+                }`}
+              />
             </GlassCard>
           ))}
         </div>

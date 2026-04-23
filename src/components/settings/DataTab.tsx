@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Database, Download, Upload, AlertCircle } from "lucide-react";
+import { Database, Download, Upload, AlertCircle, BookmarkPlus } from "lucide-react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { storageService } from "../../services/storage";
 import { Category, UserPreferences } from "../../types";
@@ -17,6 +17,7 @@ export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs })
   const viewportScale = useViewportScale();
   const s = (n: number) => getIconSize(n, viewportScale);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bookmarkInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<{
     type: "success" | "error" | null;
     message: string;
@@ -45,6 +46,25 @@ export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs })
     setTimeout(() => setImportStatus({ type: null, message: "" }), 6000);
   };
 
+  const handleBookmarkChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const categories = await storageService.importBookmarks(file);
+
+      onImport(categories, undefined, undefined);
+
+      setImportStatus({ type: "success", message: t("bookmark_import_success") });
+    } catch (error: any) {
+      setImportStatus({
+        type: "error",
+        message: error.message || t("bookmark_import_error"),
+      });
+    }
+    e.target.value = "";
+    setTimeout(() => setImportStatus({ type: null, message: "" }), 6000);
+  };
+
   return (
     <div className="p-8 w-full max-w-2xl mx-auto overflow-y-auto animate-fade-in custom-scrollbar">
       <div className="space-y-6">
@@ -58,7 +78,7 @@ export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs })
           </div>
         </div>
         <div className="panel-base p-6 rounded-2xl">
-          <h3 className="text-white font-bold mb-1 tracking-tight">{t("backup_config")}</h3>
+          <h3 className="modal-text font-bold mb-1 tracking-tight">{t("backup_config")}</h3>
           <p className="text-xs text-slate-500 mb-6">{t("backup_desc")}</p>
           <button
             onClick={handleExport}
@@ -72,7 +92,7 @@ export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs })
           </button>
         </div>
         <div className="panel-base p-6 rounded-2xl">
-          <h3 className="text-white font-bold mb-1 tracking-tight">{t("restore_config")}</h3>
+          <h3 className="modal-text font-bold mb-1 tracking-tight">{t("restore_config")}</h3>
           <p className="text-xs text-slate-500 mb-6">{t("restore_desc")}</p>
           <input
             type="file"
@@ -91,18 +111,39 @@ export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs })
             />{" "}
             {t("select_import")}
           </button>
-          {importStatus.type && (
-            <div
-              className={`mt-4 p-4 rounded-xl text-xs font-bold border flex items-center gap-3 ${
-                importStatus.type === "success"
-                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                  : "bg-red-500/10 border-red-500/20 text-red-400"
-              }`}
-            >
-              <AlertCircle size={s(18)} /> {importStatus.message}
-            </div>
-          )}
         </div>
+        <div className="panel-base p-6 rounded-2xl">
+          <h3 className="modal-text font-bold mb-1 tracking-tight">{t("bookmark_import_title")}</h3>
+          <p className="text-xs text-slate-500 mb-6">{t("bookmark_import_desc")}</p>
+          <input
+            type="file"
+            ref={bookmarkInputRef}
+            onChange={handleBookmarkChange}
+            accept=".html,.htm"
+            className="hidden"
+          />
+          <button
+            onClick={() => bookmarkInputRef.current?.click()}
+            className="btn-secondary w-full py-3 font-bold uppercase tracking-widest group"
+          >
+            <BookmarkPlus
+              size={s(18)}
+              className="text-amber-400 group-hover:scale-110 transition-transform"
+            />{" "}
+            {t("select_bookmark_import")}
+          </button>
+        </div>
+        {importStatus.type && (
+          <div
+            className={`p-4 rounded-xl text-xs font-bold border flex items-center gap-3 ${
+              importStatus.type === "success"
+                ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                : "bg-red-500/10 border-red-500/20 text-red-400"
+            }`}
+          >
+            <AlertCircle size={s(18)} /> {importStatus.message}
+          </div>
+        )}
       </div>
     </div>
   );

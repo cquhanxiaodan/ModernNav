@@ -90,7 +90,6 @@ const App: React.FC = () => {
   }
 
   const isDark = themeMode === ThemeMode.Dark;
-  const adaptiveGlassBlur = isDark ? 50 : 30;
 
   const visibleCategory = categories.find((c) => c.id === activeCategory);
   const visibleSubCategory = visibleCategory?.subCategories.find(
@@ -111,7 +110,7 @@ const App: React.FC = () => {
           --theme-hover: color-mix(in srgb, ${themeColor}, black 10%);
           --theme-active: color-mix(in srgb, ${themeColor}, black 20%);
           --theme-light: color-mix(in srgb, ${themeColor}, white 30%);
-          --glass-blur: ${adaptiveGlassBlur}px;
+          --glass-blur: 20px;
           --grid-cols: ${effectiveColumns}; /* Bind effective columns to CSS var */
         }
       `}</style>
@@ -152,13 +151,13 @@ const App: React.FC = () => {
                 }}
               >
                 <div
-                  className={`h-[1px] flex-1 bg-gradient-to-r from-transparent ${
-                    isDark ? "to-white/20" : "to-slate-400/30"
+                  className={`h-[1px] flex-1 ${
+                    isDark ? "bg-slate-700" : "bg-slate-200"
                   }`}
                 ></div>
                 <h3
-                  className={`font-bold uppercase tracking-[0.2em] px-2 ${
-                    isDark ? "text-white/50" : "text-slate-400"
+                  className={`font-semibold uppercase tracking-[0.15em] px-2 ${
+                    isDark ? "text-slate-500" : "text-slate-400"
                   }`}
                   style={{ fontSize: `${Math.max(10, Math.round(10 * viewportScale))}px` }}
                 >
@@ -167,8 +166,8 @@ const App: React.FC = () => {
                     : visibleSubCategory.title}
                 </h3>
                 <div
-                  className={`h-[1px] flex-1 bg-gradient-to-l from-transparent ${
-                    isDark ? "to-white/20" : "to-slate-400/30"
+                  className={`h-[1px] flex-1 ${
+                    isDark ? "bg-slate-700" : "bg-slate-200"
                   }`}
                 ></div>
               </div>
@@ -202,12 +201,12 @@ const App: React.FC = () => {
                       }
                     >
                       <div
-                        className={`mb-2 transition-transform duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] flex items-center justify-center`}
+                        className={`mb-2 transition-transform duration-300 group-hover:scale-110 flex items-center justify-center`}
                         style={{ height: `${scaledIconSize}px`, width: `${scaledIconSize}px` }}
                       >
                         <SmartIcon
                           icon={iconSource}
-                          imgClassName="object-contain drop-shadow-md rounded-md"
+                          imgClassName="object-contain rounded-md"
                           size={scaledIconSize}
                           style={{ width: `${scaledIconSize}px`, height: `${scaledIconSize}px` }}
                           faviconApi={faviconApi}
