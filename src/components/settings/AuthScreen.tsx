@@ -91,7 +91,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({
       </form>
       <button
         onClick={onCancel}
-        className="text-slate-500 hover:text-slate-300 text-sm mt-4 transition-colors"
+        className="text-slate-400 hover:text-slate-600 text-sm mt-4 transition-colors"
       >
         {t("cancel")}
       </button>

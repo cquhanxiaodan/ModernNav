@@ -121,11 +121,11 @@ export const GeneralTab: React.FC<GeneralTabProps> = ({ prefs, onUpdate }) => {
         </div>
 
         {/* Row 3: Friendship Links */}
-        <div className="bg-slate-800/40 p-4 rounded-xl border border-white/[0.08] space-y-3">
+        <div className="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <LinkIcon size={s(14)} className="text-slate-400" />
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
                 {t("label_friendship_links")}
               </h4>
             </div>
@@ -156,14 +156,14 @@ export const GeneralTab: React.FC<GeneralTabProps> = ({ prefs, onUpdate }) => {
                 />
                 <button
                   onClick={() => removeFooterLink(index)}
-                  className="p-2 text-slate-600 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all"
                 >
                   <Trash2 size={s(14)} />
                 </button>
               </div>
             ))}
             {formData.footerLinks.length === 0 && (
-              <p className="text-center py-2 text-slate-700 text-[10px] italic">
+              <p className="text-center py-2 text-slate-400 text-[10px] italic">
                 No friendship links configured.
               </p>
             )}

@@ -138,6 +138,10 @@ const translations = {
     add_link_card: "Save Link",
     update_link_card: "Update Link",
 
+    // Move Link
+    move_to_folder: "Move to Folder",
+    current_folder: "Current",
+
     // General Tab
     label_site_title: "Site Title",
     label_favicon_api: "Favicon API",
@@ -278,6 +282,10 @@ const translations = {
     desc_placeholder: "可选描述",
     add_link_card: "保存链接",
     update_link_card: "更新链接",
+
+    // Move Link
+    move_to_folder: "移动到文件夹",
+    current_folder: "当前",
 
     // General Tab
     label_site_title: "站点标题",
