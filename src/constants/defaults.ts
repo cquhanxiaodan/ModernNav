@@ -1,6 +1,6 @@
 import { ThemeMode, UserPreferences } from "../types";
 
-export const DEFAULT_THEME_COLOR = "#6280a3";
+export const DEFAULT_THEME_COLOR = "#3b82f6";
 export const DEFAULT_FAVICON_API = "https://favicon.im/{domain}?larger=true";
 
 export const FALLBACK_FAVICON_APIS = [
@@ -29,7 +29,7 @@ export const DEFAULT_LAYOUT_UI = {
 export const DEFAULT_PREFS: UserPreferences = {
   cardOpacity: 0.1,
   themeColor: DEFAULT_THEME_COLOR,
-  themeMode: ThemeMode.Dark,
+  themeMode: ThemeMode.Light,
   themeColorAuto: true,
   faviconApi: DEFAULT_FAVICON_API,
   siteTitle: DEFAULT_SITE_TITLE,

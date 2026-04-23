@@ -64,6 +64,13 @@ const translations = {
     select_import: "Select File to Import",
     import_success: "Configuration loaded successfully!",
     import_error: "Failed to import. Please check if the file is a valid JSON backup.",
+    bookmark_import_title: "Import Browser Bookmarks",
+    bookmark_import_desc:
+      "Import bookmarks from Chrome, Firefox, Edge, or Safari. Select the HTML file exported from your browser.",
+    select_bookmark_import: "Select Bookmark File",
+    bookmark_import_success: "Bookmarks imported successfully!",
+    bookmark_import_error:
+      "Failed to import bookmarks. Please check if the file is a valid browser bookmark export.",
     data_risk_title: "Cloud Persistence",
     data_risk_desc:
       "Changes are securely stored in Cloudflare D1. Use local backups for extra peace of mind.",
@@ -200,6 +207,12 @@ const translations = {
     select_import: "选择导入文件",
     import_success: "配置加载成功！",
     import_error: "导入失败。请检查文件是否为有效的 JSON 备份。",
+    bookmark_import_title: "导入浏览器书签",
+    bookmark_import_desc:
+      "从 Chrome、Firefox、Edge 或 Safari 导入书签。请选择从浏览器导出的 HTML 文件。",
+    select_bookmark_import: "选择书签文件",
+    bookmark_import_success: "书签导入成功！",
+    bookmark_import_error: "书签导入失败。请检查文件是否为有效的浏览器书签导出文件。",
     data_risk_title: "云端持久化",
     data_risk_desc: "更改已安全存储在 Cloudflare D1 中。使用本地备份以获得额外保障。",
     last_backup: "上次备份: {time}",

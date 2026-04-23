@@ -8,32 +8,41 @@ interface BackgroundLayerProps {
 export const BackgroundLayer: React.FC<BackgroundLayerProps> = ({ background, isDark }) => {
   const isBackgroundUrl = background.startsWith("http") || background.startsWith("data:");
 
-  return (
-    <div className="fixed inset-0 z-0">
-      {isBackgroundUrl ? (
+  if (isBackgroundUrl) {
+    return (
+      <div className="fixed inset-0 z-0">
         <img
           src={background}
           alt="Background"
           className="w-full h-full object-cover transition-opacity duration-700"
-          style={{ opacity: isDark ? 0.8 : 1 }}
+          style={{ opacity: isDark ? 0.3 : 0.15 }}
           onError={(e) => {
             (e.target as HTMLImageElement).style.opacity = "0";
           }}
         />
-      ) : (
         <div
-          className="w-full h-full transition-opacity duration-700"
-          style={{
-            background: background,
-            opacity: isDark ? 1 : 0.9,
-          }}
+          className={`absolute inset-0 transition-colors duration-500 ${
+            isDark ? "bg-slate-900/70" : "bg-white/85"
+          }`}
         />
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-0">
+      <div
+        className="w-full h-full transition-opacity duration-700"
+        style={{
+          background: background,
+          opacity: isDark ? 0.4 : 0.15,
+        }}
+      />
       <div
         className={`absolute inset-0 transition-colors duration-500 ${
-          isDark ? "bg-slate-900/30" : "bg-white/10"
+          isDark ? "bg-slate-900/60" : "bg-slate-50/90"
         }`}
-      ></div>
+      />
     </div>
   );
 };

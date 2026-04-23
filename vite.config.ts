@@ -15,7 +15,7 @@ export default defineConfig({
         name: "ModernNav - 现代导航",
         short_name: "ModernNav",
         description: "发现精彩网站，探索无限可能",
-        theme_color: "#6280a3",
+        theme_color: "#3b82f6",
         background_color: "#ffffff",
         display: "standalone",
         icons: [
@@ -87,6 +87,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 3000,
+    allowedHosts: ['.monkeycode-ai.online'],
   },
   preview: {
     port: 4173,

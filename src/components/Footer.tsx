@@ -18,10 +18,10 @@ export const Footer: React.FC<FooterProps> = ({ isDark, github, links }) => {
 
   return (
     <footer
-      className={`relative z-10 py-5 text-center text-sm flex flex-col md:flex-row justify-center items-center gap-4 border-t backdrop-blur-sm transition-colors duration-500 ${
+      className={`relative z-10 py-5 text-center text-sm flex flex-col md:flex-row justify-center items-center gap-4 border-t transition-colors duration-500 ${
         isDark
-          ? "text-white/30 border-white/5 bg-black/10"
-          : "text-slate-500 border-black/5 bg-white/20"
+          ? "text-white/30 border-slate-800 bg-slate-900/40"
+          : "text-slate-400 border-slate-200/60 bg-white/40"
       }`}
     >
       <div className="flex flex-wrap justify-center gap-y-2 gap-x-6 px-4">
@@ -49,7 +49,7 @@ export const Footer: React.FC<FooterProps> = ({ isDark, github, links }) => {
       </div>
       <div className="flex items-center shrink-0">
         <p>
-          {t("copyright")} © {new Date().getFullYear()} ModernNav
+          {t("copyright")} &copy; {new Date().getFullYear()} ModernNav
           <span className="mx-2 opacity-50">|</span>
           <span className="opacity-80">{t("powered_by")}</span>
         </p>

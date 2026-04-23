@@ -3,6 +3,7 @@ import { INITIAL_CATEGORIES } from "../constants";
 import { DEFAULT_PREFS } from "../constants/defaults";
 import { apiClient } from "./apiClient";
 import { handleApiError } from "../utils/errorHandler";
+import { parseBookmarksToCategories } from "../utils/bookmarkParser";
 
 // --- EVENT LISTENERS ---
 type NotifyType = "success" | "error" | "info";
@@ -430,6 +431,30 @@ export const storageService = {
           resolve(Array.isArray(parsed) ? { categories: parsed } : parsed);
         } catch {
           reject(new Error("Invalid backup file"));
+        }
+      };
+      reader.readAsText(file);
+    });
+  },
+
+  importBookmarks: (file: File): Promise<Category[]> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const html = e.target?.result as string;
+          if (!html || !html.includes("<DT>")) {
+            reject(new Error("Invalid bookmark file"));
+            return;
+          }
+          const categories = parseBookmarksToCategories(html);
+          if (categories.length === 0) {
+            reject(new Error("No bookmarks found in file"));
+            return;
+          }
+          resolve(categories);
+        } catch {
+          reject(new Error("Failed to parse bookmark file"));
         }
       };
       reader.readAsText(file);
