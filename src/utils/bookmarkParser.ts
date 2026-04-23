@@ -62,10 +62,7 @@ function convertNodeToCategory(node: BookmarkNode): Category | null {
 
   for (const child of node.children || []) {
     if (child.type === "folder") {
-      const subCat = convertFolderToSubCategory(child);
-      if (subCat) {
-        subCategories.push(subCat);
-      }
+      collectSubCategories(child, node.title, subCategories);
     } else if (child.type === "link") {
       directLinks.push({
         id: generateId(),
@@ -92,9 +89,10 @@ function convertNodeToCategory(node: BookmarkNode): Category | null {
   };
 }
 
-function convertFolderToSubCategory(node: BookmarkNode): SubCategory | null {
+function collectSubCategories(node: BookmarkNode, parentPath: string, result: SubCategory[]) {
+  const path = parentPath ? `${parentPath} / ${node.title}` : node.title;
   const directLinks: LinkItem[] = [];
-  const childSubs: SubCategory[] = [];
+  const childFolders: BookmarkNode[] = [];
 
   for (const child of node.children || []) {
     if (child.type === "link") {
@@ -104,41 +102,21 @@ function convertFolderToSubCategory(node: BookmarkNode): SubCategory | null {
         url: child.url!,
       });
     } else if (child.type === "folder") {
-      const sub = convertFolderToSubCategory(child);
-      if (sub) {
-        childSubs.push(sub);
-      }
+      childFolders.push(child);
     }
   }
 
-  if (directLinks.length === 0 && childSubs.length === 0) return null;
-
-  if (childSubs.length === 0) {
-    return {
-      id: generateId(),
-      title: node.title,
-      items: directLinks,
-    };
-  }
-
-  const subCategories: SubCategory[] = [];
   if (directLinks.length > 0) {
-    subCategories.push({
+    result.push({
       id: generateId(),
-      title: "Default",
+      title: path,
       items: directLinks,
     });
   }
-  subCategories.push(...childSubs);
 
-  return {
-    id: generateId(),
-    title: node.title,
-    items: directLinks.length > 0
-      ? directLinks
-      : childSubs[0]?.items || [],
-    subCategories,
-  };
+  for (const cf of childFolders) {
+    collectSubCategories(cf, path, result);
+  }
 }
 
 export function parseBookmarksToCategories(html: string): Category[] {
