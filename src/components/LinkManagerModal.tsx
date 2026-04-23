@@ -282,7 +282,7 @@ export const LinkManagerModal: React.FC<LinkManagerModalProps> = ({
                 />
               )}
               {activeTab === "data" && (
-                <DataTab onImport={handleImport} background={background} prefs={prefs} />
+                <DataTab onImport={handleImport} background={background} prefs={prefs} categories={categories} />
               )}
               {activeTab === "security" && <SecurityTab />}
             </div>

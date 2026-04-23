@@ -10,9 +10,10 @@ interface DataTabProps {
   onImport: (categories: Category[], background?: string, prefs?: UserPreferences) => void;
   background: string;
   prefs: UserPreferences;
+  categories: Category[];
 }
 
-export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs }) => {
+export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs, categories }) => {
   const { t } = useLanguage();
   const viewportScale = useViewportScale();
   const s = (n: number) => getIconSize(n, viewportScale);
@@ -50,9 +51,9 @@ export const DataTab: React.FC<DataTabProps> = ({ onImport, background, prefs })
     const file = e.target.files?.[0];
     if (!file) return;
     try {
-      const categories = await storageService.importBookmarks(file);
+      const merged = await storageService.importBookmarks(file, categories);
 
-      onImport(categories, undefined, undefined);
+      onImport(merged, undefined, undefined);
 
       setImportStatus({ type: "success", message: t("bookmark_import_success") });
     } catch (error: any) {

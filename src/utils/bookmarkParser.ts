@@ -22,14 +22,14 @@ function parseBookmarkHtml(html: string): BookmarkNode[] {
 
 function parseDl(dl: Element): BookmarkNode[] {
   const nodes: BookmarkNode[] = [];
-  const children = dl.children;
+  const children = Array.from(dl.children);
 
   for (let i = 0; i < children.length; i++) {
-    const dt = children[i];
-    if (dt.tagName !== "DT") continue;
+    const el = children[i];
+    if (el.tagName !== "DT") continue;
 
-    const h3 = dt.querySelector(":scope > H3");
-    const a = dt.querySelector(":scope > A");
+    const h3 = el.querySelector("H3");
+    const a = el.querySelector("A");
 
     if (h3) {
       const folder: BookmarkNode = {
@@ -38,16 +38,20 @@ function parseDl(dl: Element): BookmarkNode[] {
         children: [],
       };
 
-      const nextDl = dt.nextElementSibling;
-      if (nextDl && nextDl.tagName === "DL") {
-        folder.children = parseDl(nextDl);
-        i++;
+      for (let j = i + 1; j < children.length; j++) {
+        if (children[j].tagName === "DL") {
+          folder.children = parseDl(children[j]);
+          break;
+        }
+        if (children[j].tagName === "DT") {
+          break;
+        }
       }
 
       nodes.push(folder);
     } else if (a) {
       const href = a.getAttribute("href");
-      if (href && !href.startsWith("javascript:") && !href.startsWith("place:")) {
+      if (href && !href.startsWith("javascript:") && !href.startsWith("place:") && !href.startsWith("data:")) {
         nodes.push({
           type: "link",
           title: a.textContent?.trim() || "Untitled",
@@ -67,15 +71,10 @@ function convertNodeToCategory(node: BookmarkNode): Category | null {
   const directLinks: LinkItem[] = [];
 
   for (const child of node.children || []) {
-    if (child.type === "folder" && child.children && child.children.length > 0) {
-      const items: LinkItem[] = [];
-      collectLinks(child, items);
-      if (items.length > 0) {
-        subCategories.push({
-          id: generateId(),
-          title: child.title,
-          items,
-        });
+    if (child.type === "folder") {
+      const subCat = convertFolderToSubCategory(child);
+      if (subCat) {
+        subCategories.push(subCat);
       }
     } else if (child.type === "link") {
       directLinks.push({
@@ -103,7 +102,10 @@ function convertNodeToCategory(node: BookmarkNode): Category | null {
   };
 }
 
-function collectLinks(node: BookmarkNode, items: LinkItem[]) {
+function convertFolderToSubCategory(node: BookmarkNode): SubCategory | null {
+  const items: LinkItem[] = [];
+  const childSubs: SubCategory[] = [];
+
   for (const child of node.children || []) {
     if (child.type === "link") {
       items.push({
@@ -112,9 +114,34 @@ function collectLinks(node: BookmarkNode, items: LinkItem[]) {
         url: child.url!,
       });
     } else if (child.type === "folder") {
-      collectLinks(child, items);
+      const sub = convertFolderToSubCategory(child);
+      if (sub) {
+        childSubs.push(sub);
+      }
     }
   }
+
+  if (items.length === 0 && childSubs.length === 0) return null;
+
+  const subCategories: SubCategory[] = [];
+  if (items.length > 0) {
+    subCategories.push({
+      id: generateId(),
+      title: "Default",
+      items,
+    });
+  }
+  subCategories.push(...childSubs);
+
+  return {
+    id: generateId(),
+    title: node.title,
+    items: subCategories.length === 1 && subCategories[0].title === "Default"
+      ? subCategories[0].items
+      : items.length > 0
+        ? items
+        : [],
+  };
 }
 
 export function parseBookmarksToCategories(html: string): Category[] {
@@ -157,4 +184,37 @@ export function parseBookmarksToCategories(html: string): Category[] {
   }
 
   return categories;
+}
+
+export function mergeCategories(existing: Category[], imported: Category[]): Category[] {
+  const merged = [...existing];
+
+  for (const impCat of imported) {
+    const existingCat = merged.find(
+      (c) => c.title.toLowerCase() === impCat.title.toLowerCase()
+    );
+
+    if (existingCat) {
+      for (const impSub of impCat.subCategories) {
+        const existingSub = existingCat.subCategories.find(
+          (s) => s.title.toLowerCase() === impSub.title.toLowerCase()
+        );
+
+        if (existingSub) {
+          const existingUrls = new Set(existingSub.items.map((item) => item.url));
+          for (const impItem of impSub.items) {
+            if (!existingUrls.has(impItem.url)) {
+              existingSub.items.push(impItem);
+            }
+          }
+        } else {
+          existingCat.subCategories.push(impSub);
+        }
+      }
+    } else {
+      merged.push(impCat);
+    }
+  }
+
+  return merged;
 }
