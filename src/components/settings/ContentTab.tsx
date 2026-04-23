@@ -12,6 +12,7 @@ import {
   X,
   Link as LinkIcon,
   Search,
+  FolderInput,
 } from "lucide-react";
 import { Category, LinkItem, SubCategory } from "../../types";
 import { useLanguage } from "../../contexts/LanguageContext";
@@ -72,13 +73,19 @@ export const ContentTab: React.FC<ContentTabProps> = ({
   const iconPickerRef = useRef<HTMLDivElement>(null);
   const iconGroupRef = useRef<HTMLDivElement>(null);
 
+  // --- Move Link State ---
+  const [movingLinkId, setMovingLinkId] = useState<string | null>(null);
+  const [movingLinkSubId, setMovingLinkSubId] = useState<string | null>(null);
+  const moveMenuRef = useRef<HTMLDivElement>(null);
+
   // Computed State
   const isAnyEditing =
     editingCategoryId !== null ||
     editingSubMenuId !== null ||
     targetSubMenuId !== null ||
     editingLinkId !== null ||
-    isAddingSubMenu;
+    isAddingSubMenu ||
+    movingLinkId !== null;
 
   // --- Drag and Drop Hook ---
   const {
@@ -128,6 +135,18 @@ export const ContentTab: React.FC<ContentTabProps> = ({
 
       if (isOutsidePicker && isOutsideGroup) {
         setShowIconPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Click Outside Listener for Move Menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (moveMenuRef.current && !moveMenuRef.current.contains(event.target as Node)) {
+        setMovingLinkId(null);
+        setMovingLinkSubId(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -342,6 +361,58 @@ export const ContentTab: React.FC<ContentTabProps> = ({
     }
   };
 
+  const handleMoveLink = (targetCatId: string, targetSubId: string) => {
+    if (!movingLinkId || !movingLinkSubId || !selectedCategoryId) return;
+    if (selectedCategoryId === targetCatId && movingLinkSubId === targetSubId) {
+      setMovingLinkId(null);
+      setMovingLinkSubId(null);
+      return;
+    }
+
+    const newCategories = JSON.parse(JSON.stringify(categories)) as Category[];
+    const sourceCatIndex = newCategories.findIndex((c) => c.id === selectedCategoryId);
+    if (sourceCatIndex === -1) return;
+
+    const sourceSubIndex = newCategories[sourceCatIndex].subCategories.findIndex(
+      (s) => s.id === movingLinkSubId
+    );
+    if (sourceSubIndex === -1) return;
+
+    const linkIndex = newCategories[sourceCatIndex].subCategories[sourceSubIndex].items.findIndex(
+      (i) => i.id === movingLinkId
+    );
+    if (linkIndex === -1) return;
+
+    const [movedItem] = newCategories[sourceCatIndex].subCategories[sourceSubIndex].items.splice(
+      linkIndex,
+      1
+    );
+
+    const targetCatIndex = newCategories.findIndex((c) => c.id === targetCatId);
+    if (targetCatIndex === -1) return;
+
+    const targetSubIndex = newCategories[targetCatIndex].subCategories.findIndex(
+      (s) => s.id === targetSubId
+    );
+    if (targetSubIndex === -1) return;
+
+    newCategories[targetCatIndex].subCategories[targetSubIndex].items.push(movedItem);
+    onUpdateCategories(newCategories);
+
+    if (targetCatId !== selectedCategoryId) {
+      setSelectedCategoryId(targetCatId);
+    }
+
+    if (collapsedSubMenus.has(targetSubId)) {
+      const newCollapsed = new Set(collapsedSubMenus);
+      newCollapsed.delete(targetSubId);
+      setCollapsedSubMenus(newCollapsed);
+    }
+
+    setMovingLinkId(null);
+    setMovingLinkSubId(null);
+  };
+
   const closeLinkForm = () => {
     setTargetSubMenuId(null);
     setEditingLinkId(null);
@@ -362,7 +433,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
 
   const renderLinkForm = () => (
     <div
-      className="bg-slate-950/40 border-t border-white/[0.08] p-4 animate-fade-in backdrop-blur-md relative z-20"
+      className="bg-slate-50 border-t border-slate-200 p-4 animate-fade-in relative z-20"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="grid grid-cols-2 gap-4">
@@ -399,7 +470,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                 e.stopPropagation();
                 setShowIconPicker(!showIconPicker);
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+               className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
             >
               <Smile size={18} />
             </button>
@@ -476,7 +547,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
               className={`group flex items-center justify-between p-2.5 rounded-lg cursor-pointer transition-all border ${
                 selectedCategoryId === cat.id
                   ? "bg-[var(--theme-primary)]/10 border-[var(--theme-primary)] text-[var(--theme-primary)]"
-                  : "modal-text-secondary border-transparent hover:bg-white/[0.03] hover:text-[var(--theme-primary)]"
+                  : "modal-text-secondary border-transparent hover:bg-slate-100 hover:text-[var(--theme-primary)]"
               } ${
                 draggedCategoryIndex === index
                   ? draggedCategoryIndex === index
@@ -494,14 +565,14 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                   size={14}
                   className={`shrink-0 ${
                     isAnyEditing
-                      ? "text-slate-800 cursor-not-allowed"
-                      : "text-slate-700 group-hover:text-slate-500 cursor-grab active:cursor-grabbing"
+                      ? "text-slate-300 cursor-not-allowed"
+                      : "text-slate-300 group-hover:text-slate-500 cursor-grab active:cursor-grabbing"
                   }`}
                 />
                 {editingCategoryId === cat.id ? (
                   <input
                     autoFocus
-                    className="bg-slate-900 border border-[var(--theme-primary)] rounded px-1.5 py-0.5 text-xs text-white focus:outline-none w-full"
+                    className="bg-white border border-[var(--theme-primary)] rounded px-1.5 py-0.5 text-xs text-slate-800 focus:outline-none w-full"
                     value={editCategoryTitle}
                     onClick={(e) => e.stopPropagation()}
                     onChange={(e) => setEditCategoryTitle(e.target.value)}
@@ -519,7 +590,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                     setEditingCategoryId(cat.id);
                     setEditCategoryTitle(cat.title);
                   }}
-                  className="p-1 text-slate-500 hover:text-white rounded"
+                  className="p-1 text-slate-400 hover:text-slate-700 rounded"
                 >
                   <Pencil size={12} />
                 </button>
@@ -528,7 +599,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                     e.stopPropagation();
                     handleDeleteCategory(cat.id, cat.title);
                   }}
-                  className="p-1 text-slate-500 hover:text-red-400 rounded"
+                  className="p-1 text-slate-400 hover:text-red-500 rounded"
                 >
                   <Trash2 size={12} />
                 </button>
@@ -548,7 +619,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
             />
             <button
               onClick={handleAddCategory}
-              className="shrink-0 bg-white/5 border border-white/5 hover:bg-[var(--theme-primary)] text-white px-2 rounded-md transition-colors"
+              className="shrink-0 bg-slate-100 border border-slate-200 hover:bg-[var(--theme-primary)] hover:border-[var(--theme-primary)] text-slate-600 hover:text-white px-2 rounded-md transition-colors"
             >
               <Plus size={16} />
             </button>
@@ -583,8 +654,8 @@ export const ContentTab: React.FC<ContentTabProps> = ({
             }}
             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors border ${
               isAddingSubMenu
-                ? "bg-white/10 border-white/20 text-white"
-                : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+                ? "bg-slate-100 border-slate-300 text-slate-600"
+                : "bg-emerald-50 border-emerald-200 text-emerald-600 hover:bg-emerald-100"
             }`}
           >
             {isAddingSubMenu ? <X size={s(14)} /> : <FolderPlus size={s(14)} />}{" "}
@@ -649,11 +720,11 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                     <div
                       key={sub.id}
                       className={`
-                      bg-slate-800/40 border rounded-xl overflow-hidden shadow-sm transition-all duration-300
+                      bg-white border rounded-xl overflow-hidden shadow-sm transition-all duration-300
                       ${
                         dragOverSubMenuId === sub.id
                           ? "border-[var(--theme-primary)] ring-1 ring-[var(--theme-primary)] bg-[var(--theme-primary)]/5"
-                          : "border-white/[0.08]"
+                          : "border-slate-200"
                       }
                     `}
                       onDragOver={(e) => handleDragOverSubMenu(e, sub.id)}
@@ -661,20 +732,20 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                       onDrop={(e) => handleDropLinkToSubMenu(e, sub.id)}
                     >
                       <div
-                        className="flex items-center justify-between p-4 border-b border-white/[0.08] bg-white/[0.02] cursor-pointer hover:bg-white/[0.04] transition-colors group/header"
+                        className="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition-colors group/header"
                         onClick={() => toggleSubMenu(sub.id)}
                       >
                         <div className="flex items-center gap-3">
-                          <ChevronDown
-                            size={16}
-                            className={`text-slate-500 transition-transform duration-300 ${
+                            <ChevronDown
+                              size={16}
+                              className={`text-slate-400 transition-transform duration-300 ${
                               isCollapsed ? "-rotate-90" : "rotate-0"
                             }`}
                           />
                           {editingSubMenuId === sub.id ? (
                             <input
                               autoFocus
-                              className="bg-slate-900 border border-white/20 rounded px-2 py-1 text-sm text-white focus:outline-none"
+                              className="bg-white border border-slate-200 rounded px-2 py-1 text-sm text-slate-800 focus:outline-none"
                               value={editSubMenuTitle}
                               onClick={(e) => e.stopPropagation()}
                               onChange={(e) => setEditSubMenuTitle(e.target.value)}
@@ -684,7 +755,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                               onBlur={() => handleUpdateSubMenuTitle(sub.id)}
                             />
                           ) : (
-                            <h4 className="font-bold text-white/90 text-sm flex items-center gap-2 tracking-tight">
+                            <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2 tracking-tight">
                               <Folder size={14} className="text-[var(--theme-light)]" />
                               {sub.title}
                             </h4>
@@ -697,7 +768,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                               setEditingSubMenuId(sub.id);
                               setEditSubMenuTitle(sub.title);
                             }}
-                            className="p-1.5 text-slate-500 hover:text-white transition-colors bg-white/5 rounded-md hover:bg-white/10"
+                            className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors bg-slate-100 rounded-md hover:bg-slate-200"
                           >
                             <Pencil size={13} />
                           </button>
@@ -706,11 +777,11 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                               e.stopPropagation();
                               handleDeleteSubMenu(sub.id, sub.title);
                             }}
-                            className="p-1.5 text-slate-500 hover:text-red-400 transition-colors bg-white/5 rounded-md hover:bg-white/10"
+                            className="p-1.5 text-slate-400 hover:text-red-500 transition-colors bg-slate-100 rounded-md hover:bg-red-50"
                           >
                             <Trash2 size={13} />
                           </button>
-                          <div className="w-px h-3 bg-white/[0.08] mx-1"></div>
+                          <div className="w-px h-3 bg-slate-200 mx-1"></div>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -719,7 +790,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[10px] font-black uppercase tracking-widest transition-colors ${
                               targetSubMenuId === sub.id && !editingLinkId
                                 ? "bg-[var(--theme-primary)] text-white"
-                                : "bg-white/5 text-slate-400 hover:text-white"
+                                : "bg-slate-100 text-slate-500 hover:text-slate-700"
                             }`}
                           >
                             <Plus size={12} /> {t("add_new_link")}
@@ -731,7 +802,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                           {targetSubMenuId === sub.id && renderLinkForm()}
                           <div className="p-3">
                             {filteredItems.length === 0 ? (
-                              <div className="p-6 text-center text-slate-600 text-xs italic tracking-wider">
+                              <div className="p-6 text-center text-slate-400 text-xs italic tracking-wider">
                                 {searchQuery ? t("no_links_search") : t("no_links")}
                               </div>
                             ) : (
@@ -750,8 +821,8 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                                     aspect-[4/3]
                                     ${
                                       draggedLink?.subId === sub.id && draggedLink?.index === index
-                                        ? "opacity-40 border-dashed border-white/20"
-                                        : "bg-white/[0.03] border-white/[0.05] hover:bg-white/[0.06] hover:border-white/10"
+                                        ? "opacity-40 border-dashed border-slate-300"
+                                        : "bg-slate-50 border-slate-100 hover:bg-slate-100 hover:border-slate-200"
                                     }
                                     ${
                                       dragOverLink?.subId === sub.id &&
@@ -774,38 +845,128 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                                           e.stopPropagation();
                                           openEditLink(sub.id, item);
                                         }}
-                                        className="p-1.5 text-slate-400 hover:text-white bg-black/50 hover:bg-[var(--theme-primary)] rounded-md backdrop-blur-sm transition-colors"
+                                        className="p-1.5 text-slate-400 hover:text-white bg-white/80 hover:bg-[var(--theme-primary)] rounded-md backdrop-blur-sm transition-colors shadow-sm"
                                       >
                                         <Pencil size={12} />
                                       </button>
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation();
+                                          if (movingLinkId === item.id) {
+                                            setMovingLinkId(null);
+                                            setMovingLinkSubId(null);
+                                          } else {
+                                            setMovingLinkId(item.id);
+                                            setMovingLinkSubId(sub.id);
+                                          }
+                                        }}
+                                        className={`p-1.5 rounded-md backdrop-blur-sm transition-colors shadow-sm ${
+                                          movingLinkId === item.id
+                                            ? "text-white bg-[var(--theme-primary)]"
+                                            : "text-slate-400 hover:text-white bg-white/80 hover:bg-[var(--theme-primary)]"
+                                        }`}
+                                      >
+                                        <FolderInput size={12} />
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
                                           handleDeleteLink(sub.id, item.id);
                                         }}
-                                        className="p-1.5 text-slate-400 hover:text-red-400 bg-black/50 hover:bg-red-500/20 rounded-md backdrop-blur-sm transition-colors"
+                                        className="p-1.5 text-slate-400 hover:text-red-600 bg-white/80 hover:bg-red-50 rounded-md backdrop-blur-sm transition-colors shadow-sm"
                                       >
                                         <Trash2 size={12} />
                                       </button>
                                     </div>
 
+                                    {movingLinkId === item.id && (
+                                      <div
+                                        ref={moveMenuRef}
+                                        className="absolute top-8 right-0 z-30 w-56 max-h-64 overflow-y-auto rounded-lg border shadow-xl custom-scrollbar animate-fade-in-down"
+                                        style={{
+                                          backgroundColor: "var(--modal-primary)",
+                                          borderColor: "var(--modal-border)",
+                                        }}
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
+                                        <div
+                                          className="px-3 py-2 border-b text-[10px] font-bold uppercase tracking-widest"
+                                          style={{
+                                            color: "var(--modal-text-secondary)",
+                                            borderColor: "var(--modal-border)",
+                                          }}
+                                        >
+                                          {t("move_to_folder")}
+                                        </div>
+                                        {categories.map((cat) => (
+                                          <div key={cat.id}>
+                                            <div
+                                              className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider"
+                                              style={{ color: "var(--modal-text-muted)" }}
+                                            >
+                                              {cat.title}
+                                            </div>
+                                            {cat.subCategories.map((targetSub) => {
+                                              const isCurrent =
+                                                cat.id === selectedCategoryId &&
+                                                targetSub.id === sub.id;
+                                              return (
+                                                <button
+                                                  key={targetSub.id}
+                                                  disabled={isCurrent}
+                                                  onClick={() =>
+                                                    handleMoveLink(cat.id, targetSub.id)
+                                                  }
+                                                  className={`w-full text-left px-3 py-1.5 pl-6 text-xs flex items-center gap-2 transition-colors ${
+                                                    isCurrent
+                                                      ? "opacity-40 cursor-not-allowed"
+                                                      : "hover:bg-[var(--theme-primary)]/10"
+                                                  }`}
+                                                  style={{ color: "var(--modal-text)" }}
+                                                >
+                                                  <Folder
+                                                    size={12}
+                                                    className="shrink-0"
+                                                    style={{ color: "var(--theme-light)" }}
+                                                  />
+                                                  <span className="truncate">
+                                                    {targetSub.title}
+                                                  </span>
+                                                  {isCurrent && (
+                                                    <span
+                                                      className="ml-auto text-[9px] shrink-0"
+                                                      style={{
+                                                        color: "var(--modal-text-muted)",
+                                                      }}
+                                                    >
+                                                      {t("current_folder")}
+                                                    </span>
+                                                  )}
+                                                </button>
+                                              );
+                                            })}
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
                                     <div
-                                      className={`absolute top-2 left-2 text-slate-600 group-hover:text-slate-400 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity ${
+                                      className={`absolute top-2 left-2 text-slate-300 group-hover:text-slate-400 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity ${
                                         isAnyEditing ? "hidden" : ""
                                       }`}
                                     >
                                       <GripVertical size={14} />
                                     </div>
 
-                                    <div className="mb-2 w-8 h-8 flex items-center justify-center text-slate-300">
+                                    <div className="mb-2 w-8 h-8 flex items-center justify-center text-slate-500">
                                       {renderIcon(item.icon, 24)}
                                     </div>
 
                                     <div className="w-full text-center px-1">
-                                      <div className="text-xs font-medium text-slate-200 truncate">
+                                      <div className="text-xs font-medium text-slate-700 truncate">
                                         {item.title}
                                       </div>
-                                      <div className="text-[10px] text-slate-500 truncate opacity-60 mt-0.5">
+                                      <div className="text-[10px] text-slate-400 truncate mt-0.5">
                                         {item.url
                                           ? (() => {
                                               try {

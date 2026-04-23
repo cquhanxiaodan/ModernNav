@@ -116,7 +116,7 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
     >
       <div className="space-y-3 pb-4 relative">
         {/* SECTION 1: IMMERSIVE VISUAL CONSOLE (Background + Theme + Full-Width Preview) */}
-        <section className="relative group overflow-hidden bg-slate-900/60 rounded-3xl border border-white/[0.08] shadow-2xl">
+        <section className="relative group overflow-hidden bg-slate-100 rounded-3xl border border-slate-200 shadow-sm">
           {/* Full-width Background Preview Layer */}
           <div className="h-48 relative overflow-hidden">
             {bgInput.startsWith("http") || bgInput.startsWith("data:") ? (
@@ -167,14 +167,14 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
                 <label className="label-xs pl-1">{t("label_theme_color")}</label>
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
-                    <label className="flex items-center gap-2 bg-white/5 rounded-lg p-1.5 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                    <label className="flex items-center gap-2 bg-white rounded-lg p-1.5 border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
                       <input
                         type="color"
                         value={themeColorInput}
                         onChange={handleColorPick}
                         className="w-6 h-6 rounded cursor-pointer bg-transparent p-0 border-0 shrink-0"
                       />
-                      <span className="text-[10px] font-mono text-slate-300 uppercase flex-1 text-right pr-1">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase flex-1 text-right pr-1">
                         {themeColorInput}
                       </span>
                     </label>
@@ -204,24 +204,24 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
         </section>
 
         {/* SECTION 2: CONSOLIDATED PRECISION ENGINE (Layout + Geometry) */}
-        <section className="bg-slate-800/20 backdrop-blur-sm p-4 rounded-3xl border border-white/[0.05] space-y-6">
-          <div className="flex items-center justify-between border-b border-white/[0.05] pb-3">
+        <section className="bg-white p-4 rounded-3xl border border-slate-200 space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-slate-700/30 rounded-lg text-slate-300">
+              <div className="p-2 bg-slate-100 rounded-lg text-slate-500">
                 <Sliders size={s(18)} />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-white tracking-tight">
+                <h3 className="text-sm font-bold text-slate-800 tracking-tight">
                   {t("precision_controls")}
                 </h3>
-                <p className="text-[9px] text-slate-500 font-medium uppercase tracking-widest mt-0.5">
+                <p className="text-[9px] text-slate-400 font-medium uppercase tracking-widest mt-0.5">
                   {t("geometry_layout")}
                 </p>
               </div>
             </div>
             <div className="flex gap-1.5">
-              <div className="h-1.5 w-1.5 rounded-full bg-slate-700"></div>
-              <div className="h-1.5 w-1.5 rounded-full bg-slate-700"></div>
+              <div className="h-1.5 w-1.5 rounded-full bg-slate-300"></div>
+              <div className="h-1.5 w-1.5 rounded-full bg-slate-300"></div>
               <div className="h-1.5 w-1.5 rounded-full bg-[var(--theme-primary)]"></div>
             </div>
           </div>
@@ -230,7 +230,7 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
             {/* Canvas Width */}
             <div className="group">
               <div className="flex justify-between mb-1.5 px-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-400 transition-colors">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700 transition-colors">
                   {t("canvas_width")}
                 </label>
                 <span className="text-[10px] text-[var(--theme-primary)] font-mono font-bold bg-[var(--theme-primary)]/10 px-1.5 py-0.5 rounded leading-none">
@@ -244,17 +244,17 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
                 step="20"
                 value={widthInput}
                 onChange={(e) => setWidthInput(Number(e.target.value))}
-                className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
+                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
               />
             </div>
 
             {/* Grid Logic */}
             <div className="group">
               <div className="flex justify-between mb-1.5 px-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-400 transition-colors">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700 transition-colors">
                   {t("grid_cols")}
                 </label>
-                <span className="text-[10px] text-white font-mono font-bold bg-slate-700/50 px-1.5 py-0.5 rounded leading-none">
+                <span className="text-[10px] text-slate-600 font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded leading-none">
                   {colsInput}
                 </span>
               </div>
@@ -265,14 +265,14 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
                 step="1"
                 value={colsInput}
                 onChange={(e) => setColsInput(Number(e.target.value))}
-                className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
+                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
               />
             </div>
 
             {/* Card Width */}
             <div className="group">
               <div className="flex justify-between mb-1.5 px-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-400 transition-colors">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700 transition-colors">
                   {t("card_width")}
                 </label>
                 <span className="text-[10px] text-[var(--theme-primary)] font-mono font-bold">
@@ -286,14 +286,14 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
                 step="4"
                 value={cardWidthInput}
                 onChange={(e) => setCardWidthInput(Number(e.target.value))}
-                className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
+                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
               />
             </div>
 
             {/* Card Height */}
             <div className="group">
               <div className="flex justify-between mb-1.5 px-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-400 transition-colors">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700 transition-colors">
                   {t("card_height")}
                 </label>
                 <span className="text-[10px] text-[var(--theme-primary)] font-mono font-bold">
@@ -307,24 +307,24 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
                 step="4"
                 value={cardHeightInput}
                 onChange={(e) => setCardHeightInput(Number(e.target.value))}
-                className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
+                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
               />
             </div>
 
             {/* Card Opacity - Single row on desktop for prominence */}
             <div className="group md:col-span-2 space-y-2.5">
               <div className="flex justify-between px-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-400 transition-colors">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest group-hover:text-slate-700 transition-colors">
                   {t("surface_opacity")}
                 </label>
                 <div className="flex items-center gap-3">
-                  <div className="w-24 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="w-24 h-1.5 bg-slate-200 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-[var(--theme-primary)] transition-all duration-300"
                       style={{ width: `${opacityInput * 100}%` }}
                     />
                   </div>
-                  <span className="text-[10px] text-white font-mono font-bold min-w-[32px] text-right">
+                  <span className="text-[10px] text-slate-600 font-mono font-bold min-w-[32px] text-right">
                     {Math.round(opacityInput * 100)}%
                   </span>
                 </div>
@@ -336,7 +336,7 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
                 step="0.05"
                 value={opacityInput}
                 onChange={(e) => setOpacityInput(Number(e.target.value))}
-                className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
+                className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-[var(--theme-primary)]"
               />
             </div>
           </div>

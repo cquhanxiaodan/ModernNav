@@ -60,7 +60,7 @@ export const SecurityTab: React.FC = () => {
             <Shield size={s(24)} />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-white tracking-tight">{t("access_control")}</h3>
+            <h3 className="text-lg font-bold text-slate-800 tracking-tight">{t("access_control")}</h3>
             <p className="text-sm text-slate-500">{t("access_desc")}</p>
           </div>
         </div>
@@ -96,7 +96,7 @@ export const SecurityTab: React.FC = () => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="text-[10px] font-bold text-slate-500 flex items-center gap-2 hover:text-white transition-colors uppercase tracking-widest"
+              className="text-[10px] font-bold text-slate-500 flex items-center gap-2 hover:text-slate-700 transition-colors uppercase tracking-widest"
             >
               {showPassword ? <EyeOff size={s(14)} /> : <Eye size={s(14)} />}{" "}
               {showPassword ? t("hide_codes") : t("show_codes")}
