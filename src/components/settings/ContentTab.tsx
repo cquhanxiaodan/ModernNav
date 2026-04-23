@@ -433,7 +433,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
 
   const renderLinkForm = () => (
     <div
-      className="bg-slate-50 border-t border-slate-200 p-4 animate-fade-in relative z-20"
+      className="bg-slate-50/30 border-t border-slate-200 p-4 animate-fade-in relative z-20"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="grid grid-cols-2 gap-4">
@@ -619,7 +619,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
             />
             <button
               onClick={handleAddCategory}
-              className="shrink-0 bg-slate-100 border border-slate-200 hover:bg-[var(--theme-primary)] hover:border-[var(--theme-primary)] text-slate-600 hover:text-white px-2 rounded-md transition-colors"
+              className="shrink-0 bg-white border border-slate-200 hover:bg-[var(--theme-primary)] hover:border-[var(--theme-primary)] text-slate-500 hover:text-white px-2 rounded-md transition-colors"
             >
               <Plus size={16} />
             </button>
@@ -732,7 +732,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                       onDrop={(e) => handleDropLinkToSubMenu(e, sub.id)}
                     >
                       <div
-                        className="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition-colors group/header"
+                        className="flex items-center justify-between p-4 border-b border-slate-100 bg-slate-50/30 cursor-pointer hover:bg-slate-50/60 transition-colors group/header"
                         onClick={() => toggleSubMenu(sub.id)}
                       >
                         <div className="flex items-center gap-3">
@@ -768,7 +768,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                               setEditingSubMenuId(sub.id);
                               setEditSubMenuTitle(sub.title);
                             }}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors bg-slate-100 rounded-md hover:bg-slate-200"
+                            className="p-1.5 text-slate-400 hover:text-slate-700 transition-colors rounded-md hover:bg-slate-50"
                           >
                             <Pencil size={13} />
                           </button>
@@ -777,7 +777,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                               e.stopPropagation();
                               handleDeleteSubMenu(sub.id, sub.title);
                             }}
-                            className="p-1.5 text-slate-400 hover:text-red-500 transition-colors bg-slate-100 rounded-md hover:bg-red-50"
+                            className="p-1.5 text-slate-400 hover:text-red-500 transition-colors rounded-md hover:bg-red-50"
                           >
                             <Trash2 size={13} />
                           </button>
@@ -790,7 +790,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                             className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-[10px] font-black uppercase tracking-widest transition-colors ${
                               targetSubMenuId === sub.id && !editingLinkId
                                 ? "bg-[var(--theme-primary)] text-white"
-                                : "bg-slate-100 text-slate-500 hover:text-slate-700"
+                                : "bg-transparent text-slate-400 hover:text-slate-600 hover:bg-slate-50"
                             }`}
                           >
                             <Plus size={12} /> {t("add_new_link")}
@@ -822,7 +822,7 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                                     ${
                                       draggedLink?.subId === sub.id && draggedLink?.index === index
                                         ? "opacity-40 border-dashed border-slate-300"
-                                        : "bg-slate-50 border-slate-100 hover:bg-slate-100 hover:border-slate-200"
+                                        : "bg-slate-50/50 border-slate-150 hover:bg-slate-50 hover:border-slate-200"
                                     }
                                     ${
                                       dragOverLink?.subId === sub.id &&
