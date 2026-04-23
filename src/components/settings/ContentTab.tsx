@@ -852,19 +852,10 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                                       <button
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          if (movingLinkId === item.id) {
-                                            setMovingLinkId(null);
-                                            setMovingLinkSubId(null);
-                                          } else {
-                                            setMovingLinkId(item.id);
-                                            setMovingLinkSubId(sub.id);
-                                          }
+                                          setMovingLinkId(item.id);
+                                          setMovingLinkSubId(sub.id);
                                         }}
-                                        className={`p-1.5 rounded-md backdrop-blur-sm transition-colors shadow-sm ${
-                                          movingLinkId === item.id
-                                            ? "text-white bg-[var(--theme-primary)]"
-                                            : "text-slate-400 hover:text-white bg-white/80 hover:bg-[var(--theme-primary)]"
-                                        }`}
+                                        className="p-1.5 rounded-md backdrop-blur-sm transition-colors shadow-sm text-slate-400 hover:text-white bg-white/80 hover:bg-[var(--theme-primary)]"
                                       >
                                         <FolderInput size={12} />
                                       </button>
@@ -878,77 +869,6 @@ export const ContentTab: React.FC<ContentTabProps> = ({
                                         <Trash2 size={12} />
                                       </button>
                                     </div>
-
-                                    {movingLinkId === item.id && (
-                                      <div
-                                        ref={moveMenuRef}
-                                        className="absolute top-8 right-0 z-30 w-56 max-h-64 overflow-y-auto rounded-lg border shadow-xl custom-scrollbar animate-fade-in-down"
-                                        style={{
-                                          backgroundColor: "var(--modal-primary)",
-                                          borderColor: "var(--modal-border)",
-                                        }}
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        <div
-                                          className="px-3 py-2 border-b text-[10px] font-bold uppercase tracking-widest"
-                                          style={{
-                                            color: "var(--modal-text-secondary)",
-                                            borderColor: "var(--modal-border)",
-                                          }}
-                                        >
-                                          {t("move_to_folder")}
-                                        </div>
-                                        {categories.map((cat) => (
-                                          <div key={cat.id}>
-                                            <div
-                                              className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider"
-                                              style={{ color: "var(--modal-text-muted)" }}
-                                            >
-                                              {cat.title}
-                                            </div>
-                                            {cat.subCategories.map((targetSub) => {
-                                              const isCurrent =
-                                                cat.id === selectedCategoryId &&
-                                                targetSub.id === sub.id;
-                                              return (
-                                                <button
-                                                  key={targetSub.id}
-                                                  disabled={isCurrent}
-                                                  onClick={() =>
-                                                    handleMoveLink(cat.id, targetSub.id)
-                                                  }
-                                                  className={`w-full text-left px-3 py-1.5 pl-6 text-xs flex items-center gap-2 transition-colors ${
-                                                    isCurrent
-                                                      ? "opacity-40 cursor-not-allowed"
-                                                      : "hover:bg-[var(--theme-primary)]/10"
-                                                  }`}
-                                                  style={{ color: "var(--modal-text)" }}
-                                                >
-                                                  <Folder
-                                                    size={12}
-                                                    className="shrink-0"
-                                                    style={{ color: "var(--theme-light)" }}
-                                                  />
-                                                  <span className="truncate">
-                                                    {targetSub.title}
-                                                  </span>
-                                                  {isCurrent && (
-                                                    <span
-                                                      className="ml-auto text-[9px] shrink-0"
-                                                      style={{
-                                                        color: "var(--modal-text-muted)",
-                                                      }}
-                                                    >
-                                                      {t("current_folder")}
-                                                    </span>
-                                                  )}
-                                                </button>
-                                              );
-                                            })}
-                                          </div>
-                                        ))}
-                                      </div>
-                                    )}
 
                                     <div
                                       className={`absolute top-2 left-2 text-slate-300 group-hover:text-slate-400 cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity ${
@@ -996,6 +916,88 @@ export const ContentTab: React.FC<ContentTabProps> = ({
           </div>
         </div>
       </div>
+
+      {movingLinkId && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center"
+          onClick={() => {
+            setMovingLinkId(null);
+            setMovingLinkSubId(null);
+          }}
+        >
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" />
+          <div
+            className="relative w-72 max-h-80 overflow-y-auto rounded-xl border shadow-2xl custom-scrollbar animate-fade-in-down"
+            style={{
+              backgroundColor: "var(--modal-primary)",
+              borderColor: "var(--modal-border)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="sticky top-0 px-4 py-3 border-b text-xs font-bold uppercase tracking-widest flex items-center justify-between"
+              style={{
+                color: "var(--modal-text)",
+                borderColor: "var(--modal-border)",
+                backgroundColor: "var(--modal-primary)",
+              }}
+            >
+              <span>{t("move_to_folder")}</span>
+              <button
+                onClick={() => {
+                  setMovingLinkId(null);
+                  setMovingLinkSubId(null);
+                }}
+                className="text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {categories.map((cat) => (
+              <div key={cat.id}>
+                <div
+                  className="px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider"
+                  style={{ color: "var(--modal-text-muted)" }}
+                >
+                  {cat.title}
+                </div>
+                {cat.subCategories.map((targetSub) => {
+                  const isCurrent =
+                    cat.id === selectedCategoryId && targetSub.id === movingLinkSubId;
+                  return (
+                    <button
+                      key={targetSub.id}
+                      disabled={isCurrent}
+                      onClick={() => handleMoveLink(cat.id, targetSub.id)}
+                      className={`w-full text-left px-4 py-2 pl-7 text-sm flex items-center gap-2 transition-colors ${
+                        isCurrent
+                          ? "opacity-40 cursor-not-allowed"
+                          : "hover:bg-[var(--theme-primary)]/10"
+                      }`}
+                      style={{ color: "var(--modal-text)" }}
+                    >
+                      <Folder
+                        size={14}
+                        className="shrink-0"
+                        style={{ color: "var(--theme-light)" }}
+                      />
+                      <span className="truncate">{targetSub.title}</span>
+                      {isCurrent && (
+                        <span
+                          className="ml-auto text-[10px] shrink-0"
+                          style={{ color: "var(--modal-text-muted)" }}
+                        >
+                          {t("current_folder")}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
