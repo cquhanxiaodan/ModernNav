@@ -41,6 +41,7 @@ const App: React.FC = () => {
     faviconApi,
     footerGithub,
     footerLinks,
+    pageBgColor,
   } = state;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -74,7 +75,7 @@ const App: React.FC = () => {
           themeMode === ThemeMode.Dark ? "bg-slate-900" : "bg-slate-50"
         }`}
       >
-        <BackgroundLayer background={background} isDark={themeMode === ThemeMode.Dark} />
+        <BackgroundLayer background={background} isDark={themeMode === ThemeMode.Dark} pageBgColor={pageBgColor} />
         <div className="w-full max-w-[1000px] relative z-10">
           <SkeletonLoader
             cardOpacity={cardOpacity}
@@ -116,7 +117,7 @@ const App: React.FC = () => {
       `}</style>
 
       {/* Background Layer */}
-      <BackgroundLayer background={background} isDark={isDark} />
+      <BackgroundLayer background={background} isDark={isDark} pageBgColor={pageBgColor} />
 
       {/* Navigation - Dynamic Island */}
       <CategoryNav

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Sliders, RotateCcw, Save, Wand2, Loader2, Image as ImageIcon } from "lucide-react";
+import { Sliders, RotateCcw, Save, Wand2, Loader2, Image as ImageIcon, Palette } from "lucide-react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { DEFAULT_BACKGROUND } from "../../services/storage";
-import { DEFAULT_LAYOUT_UI } from "../../constants/defaults";
+import { DEFAULT_LAYOUT_UI, DEFAULT_PAGE_BG_COLOR } from "../../constants/defaults";
 import { getDominantColor } from "../../utils/color";
 import { useViewportScale } from "../../hooks/useViewportScale";
 import { getIconSize } from "../../utils/favicon";
@@ -20,6 +20,7 @@ interface AppearanceTabProps {
     themeAuto?: boolean
   ) => void;
   currentLayout: { width: number; cardWidth: number; cardHeight: number; cols: number };
+  currentPageBgColor?: string;
 }
 
 export const AppearanceTab: React.FC<AppearanceTabProps> = ({
@@ -29,6 +30,7 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
   currentThemeAuto,
   onUpdate,
   currentLayout = DEFAULT_LAYOUT_UI,
+  currentPageBgColor,
 }) => {
   const { t } = useLanguage();
   const viewportScale = useViewportScale();
@@ -45,6 +47,10 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
   const [cardWidthInput, setCardWidthInput] = useState(currentLayout.cardWidth);
   const [cardHeightInput, setCardHeightInput] = useState(currentLayout.cardHeight);
   const [colsInput, setColsInput] = useState(currentLayout.cols);
+
+  const [pageBgColorInput, setPageBgColorInput] = useState(
+    currentPageBgColor ?? DEFAULT_PAGE_BG_COLOR
+  );
 
   // Status and Loading states
   const [bgStatus, setBgStatus] = useState<string>("");
@@ -69,7 +75,8 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
         cardHeight: cardHeightInput,
         cols: colsInput,
       },
-      localAutoMode
+      localAutoMode,
+      { pageBgColor: pageBgColorInput }
     );
 
     setBgStatus(t("bg_updated"));
@@ -196,6 +203,32 @@ export const AppearanceTab: React.FC<AppearanceTabProps> = ({
                     <span className="text-[10px] font-bold uppercase tracking-wider hidden sm:inline">
                       {t("btn_auto_extract")}
                     </span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="label-xs pl-1">{t("label_page_bg_color")}</label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1">
+                    <label className="flex items-center gap-2 bg-white rounded-lg p-1.5 border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                      <input
+                        type="color"
+                        value={pageBgColorInput}
+                        onChange={(e) => setPageBgColorInput(e.target.value)}
+                        className="w-6 h-6 rounded cursor-pointer bg-transparent p-0 border-0 shrink-0"
+                      />
+                      <span className="text-[10px] font-mono text-slate-500 uppercase flex-1 text-right pr-1">
+                        {pageBgColorInput}
+                      </span>
+                    </label>
+                  </div>
+                  <button
+                    onClick={() => setPageBgColorInput(DEFAULT_PAGE_BG_COLOR)}
+                    className="btn-secondary h-9 px-4 rounded-xl"
+                    title={t("reset_bg_btn")}
+                  >
+                    <RotateCcw size={s(16)} />
                   </button>
                 </div>
               </div>

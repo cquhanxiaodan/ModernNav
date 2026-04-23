@@ -279,6 +279,7 @@ export const LinkManagerModal: React.FC<LinkManagerModalProps> = ({
                     cardHeight: prefs.cardHeight ?? 96,
                     cols: prefs.gridColumns ?? 6,
                   }}
+                  currentPageBgColor={prefs.pageBgColor}
                 />
               )}
               {activeTab === "data" && (

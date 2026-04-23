@@ -48,6 +48,7 @@ export interface UserPreferences {
   faviconApi?: string;
   footerGithub?: string;
   footerLinks?: FooterLink[];
+  pageBgColor?: string;
 }
 
 export interface ApiResponse<T = any> {

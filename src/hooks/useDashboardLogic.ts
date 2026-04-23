@@ -9,6 +9,7 @@ import {
   DEFAULT_SITE_TITLE,
   DEFAULT_FOOTER_GITHUB,
   DEFAULT_LAYOUT,
+  DEFAULT_PAGE_BG_COLOR,
 } from "../constants/defaults";
 
 export const useDashboardLogic = () => {
@@ -74,6 +75,9 @@ export const useDashboardLogic = () => {
   const [footerLinks, setFooterLinks] = useState<{ title: string; url: string }[]>(
     localData.prefs.footerLinks ?? []
   );
+  const [pageBgColor, setPageBgColor] = useState<string>(
+    localData.prefs.pageBgColor ?? DEFAULT_PAGE_BG_COLOR
+  );
 
   const { language, setLanguage } = useLanguage();
 
@@ -102,6 +106,7 @@ export const useDashboardLogic = () => {
         setFaviconApi(data.prefs.faviconApi ?? DEFAULT_FAVICON_API);
         setFooterGithub(data.prefs.footerGithub ?? DEFAULT_FOOTER_GITHUB);
         setFooterLinks(data.prefs.footerLinks ?? []);
+        setPageBgColor(data.prefs.pageBgColor ?? DEFAULT_PAGE_BG_COLOR);
 
         let finalColor = data.prefs.themeColor || DEFAULT_THEME_COLOR;
 
@@ -208,6 +213,7 @@ export const useDashboardLogic = () => {
       if (extraPrefs.faviconApi !== undefined) setFaviconApi(extraPrefs.faviconApi);
       if (extraPrefs.footerGithub !== undefined) setFooterGithub(extraPrefs.footerGithub);
       if (extraPrefs.footerLinks !== undefined) setFooterLinks(extraPrefs.footerLinks);
+      if (extraPrefs.pageBgColor !== undefined) setPageBgColor(extraPrefs.pageBgColor);
     }
 
     const finalSiteTitle = extraPrefs?.siteTitle !== undefined ? extraPrefs.siteTitle : siteTitle;
@@ -217,6 +223,8 @@ export const useDashboardLogic = () => {
       extraPrefs?.footerGithub !== undefined ? extraPrefs.footerGithub : footerGithub;
     const finalFooterLinks =
       extraPrefs?.footerLinks !== undefined ? extraPrefs.footerLinks : footerLinks;
+    const finalPageBgColor =
+      extraPrefs?.pageBgColor !== undefined ? extraPrefs.pageBgColor : pageBgColor;
 
     try {
       await storageService.setBackground(url);
@@ -234,6 +242,7 @@ export const useDashboardLogic = () => {
           faviconApi: finalFaviconApi,
           footerGithub: finalFooterGithub,
           footerLinks: finalFooterLinks,
+          pageBgColor: finalPageBgColor,
         },
         true
       );
@@ -258,6 +267,7 @@ export const useDashboardLogic = () => {
       faviconApi,
       footerGithub,
       footerLinks,
+      pageBgColor,
     });
   };
 
@@ -299,6 +309,7 @@ export const useDashboardLogic = () => {
       faviconApi,
       footerGithub,
       footerLinks,
+      pageBgColor,
     },
     actions: {
       setCategories,

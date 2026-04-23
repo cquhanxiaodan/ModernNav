@@ -3,9 +3,10 @@ import React from "react";
 interface BackgroundLayerProps {
   background: string;
   isDark: boolean;
+  pageBgColor?: string;
 }
 
-export const BackgroundLayer: React.FC<BackgroundLayerProps> = ({ background, isDark }) => {
+export const BackgroundLayer: React.FC<BackgroundLayerProps> = ({ background, isDark, pageBgColor }) => {
   const isBackgroundUrl = background.startsWith("http") || background.startsWith("data:");
 
   if (isBackgroundUrl) {
@@ -24,6 +25,7 @@ export const BackgroundLayer: React.FC<BackgroundLayerProps> = ({ background, is
           className={`absolute inset-0 transition-colors duration-500 ${
             isDark ? "bg-slate-900/70" : "bg-white/85"
           }`}
+          style={!isDark && pageBgColor ? { backgroundColor: pageBgColor } : undefined}
         />
       </div>
     );
@@ -42,6 +44,7 @@ export const BackgroundLayer: React.FC<BackgroundLayerProps> = ({ background, is
         className={`absolute inset-0 transition-colors duration-500 ${
           isDark ? "bg-slate-900/60" : "bg-slate-50/90"
         }`}
+        style={!isDark && pageBgColor ? { backgroundColor: pageBgColor } : undefined}
       />
     </div>
   );

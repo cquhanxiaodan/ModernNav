@@ -90,6 +90,7 @@ const translations = {
     label_theme_color: "Theme Color",
     btn_auto_extract: "Auto Extract",
     btn_custom_color: "Custom",
+    label_page_bg_color: "Page Background",
     theme_updated: "Theme color updated!",
     extracting_color: "Extracting color...",
 
@@ -235,6 +236,7 @@ const translations = {
     label_theme_color: "主题色",
     btn_auto_extract: "自动从图片提取",
     btn_custom_color: "自定义选择",
+    label_page_bg_color: "页面背景色",
     theme_updated: "主题色已更新！",
     extracting_color: "正在提取颜色...",
 

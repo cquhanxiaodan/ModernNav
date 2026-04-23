@@ -1,6 +1,7 @@
 import { ThemeMode, UserPreferences } from "../types";
 
 export const DEFAULT_THEME_COLOR = "#3b82f6";
+export const DEFAULT_PAGE_BG_COLOR = "#faf8f3";
 export const DEFAULT_FAVICON_API = "https://favicon.im/{domain}?larger=true";
 
 export const FALLBACK_FAVICON_APIS = [
@@ -35,4 +36,5 @@ export const DEFAULT_PREFS: UserPreferences = {
   siteTitle: DEFAULT_SITE_TITLE,
   footerGithub: DEFAULT_FOOTER_GITHUB,
   footerLinks: DEFAULT_FOOTER_LINKS,
+  pageBgColor: DEFAULT_PAGE_BG_COLOR,
 };
